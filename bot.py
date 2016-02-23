@@ -23,8 +23,8 @@ socket.setdefaulttimeout(float(options['general']['timeout']))
 
 class Bot(object):
 
-    BASE_URL = 'http://pl.ogame.gameforge.com/'
-    LOGIN_URL = 'http://pl.ogame.gameforge.com/main/login'
+    BASE_URL = 'https://en.ogame.gameforge.com/'
+    LOGIN_URL = 'https://en.ogame.gameforge.com/main/login'
     HEADERS = [('User-agent', 'Mozilla/5.0 (Windows NT 6.2; WOW64)\
      AppleWebKit/537.15 (KHTML, like Gecko) Chrome/24.0.1295.0 Safari/537.15')]
     RE_BUILD_REQUEST = re.compile(r"sendBuildRequest\(\'(.*)\', null, 1\)")
@@ -86,7 +86,7 @@ class Bot(object):
         farms = options['farming']['farms']
         self.farm_no = randint(0, len(farms)-1) if farms else 0
         
-        self.MAIN_URL = 'http://s%s-pl.ogame.gameforge.com/game/index.php' % self.uni
+        self.MAIN_URL = 'https://s%s-en.ogame.gameforge.com/game/index.php' % self.uni
         self.PAGES = {
             'main':        self.MAIN_URL + '?page=overview',
             'resources':   self.MAIN_URL + '?page=resources',
@@ -201,9 +201,12 @@ class Bot(object):
         
         self.logger.info('Logging in..')
         self.br.select_form(name='loginForm')
-        self.br.form['uni'] = ['s%s-pl.ogame.gameforge.com' % self.uni]
-        self.br.form['login'] = username
-        self.br.form['pass'] = password
+        # self.br.form['uni'] = ['s%s-en.ogame.gameforge.com' % self.uni]
+        # self.br.form['login'] = username
+        # self.br.form['pass'] = password
+        self.br.form.set_value_by_label(['Hyperion'], 'uni')
+        self.br.form.set_value(username, 'login')
+        self.br.form.set_value(password, 'pass')
         self.br.submit()
 
         if self.br.geturl().startswith(self.MAIN_URL):
