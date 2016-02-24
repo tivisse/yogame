@@ -7,7 +7,7 @@ class SMSAPIGateway(object):
 	PASS_MD5 = '85d9ee56e9927912119fbc89de2eb22e'
 	USERNAME = 'username'
 	URL = 'https://ssl.smsapi.pl/sms.do?'
-	TO = 'PHONE_NUMBER'
+	TO = '0032471071323'
 
 	def send(self, msg):
 		url = '%susername=%s&password=%s&message=%s&to=%s&eco=1&encoding=utf-8' % \
@@ -19,4 +19,4 @@ class SMSAPIGateway(object):
 			print e
 
 if __name__ == "__main__":
-	SMSAPIGateway().send('tesfg zażółć gęślą jażźń')
+	SMSAPIGateway().send('Alerte SMS')
