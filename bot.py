@@ -278,6 +278,7 @@ class Bot(object):
         for p in iter(self.planets):
             self.update_planet_info(p)
             self.update_planet_research(p)
+            self.update_planet_facilities(p)
             self.update_planet_fleet(p)
         for m in iter(self.moons):
             self.update_planet_info(m)
@@ -378,6 +379,24 @@ class Bot(object):
         soup = BeautifulSoup(resp)
         try:
             ButtonList = soup.find(id='buttonz')
+            AllResearchList = ButtonList.findAll('li')
+            for research in AllResearchList:
+                if research.get('class') == 'on':
+                    fb = research.find('a', 'fastBuild')
+                    if fb:
+                        build_url = fb.get('onclick') if fb else ''
+                        build_url = self._parse_research_url(build_url)
+                        self.logger.info('Research launched on %s:%s'% (planet, fb.get('title')))
+                        self.br.open(build_url)
+                        break
+        except:
+            self.logger.exception('Exception while retrieving researches')
+
+    def update_planet_facilities(self, planet):
+        resp = self.br.open(self._get_url('station', planet))
+        soup = BeautifulSoup(resp)
+        try:
+            ButtonList = soup.find(id='stationbuilding')
             AllResearchList = ButtonList.findAll('li')
             for research in AllResearchList:
                 if research.get('class') == 'on':
