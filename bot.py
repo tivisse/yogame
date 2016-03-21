@@ -28,6 +28,7 @@ class Bot(object):
     HEADERS = [('User-agent', 'Mozilla/5.0 (Windows NT 6.2; WOW64)\
      AppleWebKit/537.15 (KHTML, like Gecko) Chrome/24.0.1295.0 Safari/537.15')]
     RE_BUILD_REQUEST = re.compile(r"sendBuildRequest\(\'(.*)\', null, 1\)")
+    RE_RESEARCH_REQUEST = re.compile(r"sendBuildRequest\(\'(.*)\'")
     RE_SERVER_TIME = re.compile(r"var serverTime=new Date\((.*)\);var localTime")
 
     #ship -> ship id on the page
@@ -143,6 +144,12 @@ class Bot(object):
         convert: `sendBuildRequest('url', null, 1)`; into: `url`
         """
         return self.RE_BUILD_REQUEST.findall(js)[0]
+
+    def _parse_research_url(self, js):
+        """
+        convert: `sendBuildRequest('url', null, false)`; into: `url`
+        """
+        return self.RE_RESEARCH_REQUEST.findall(js)[0]
 
     def _parse_server_time(self, content):
         return self.RE_SERVER_TIME.findall(content)[0]
@@ -270,6 +277,7 @@ class Bot(object):
 
         for p in iter(self.planets):
             self.update_planet_info(p)
+            self.update_planet_research(p)
             self.update_planet_fleet(p)
         for m in iter(self.moons):
             self.update_planet_info(m)
@@ -363,6 +371,27 @@ class Bot(object):
                 self.transport_manager.update_building(planet)
         else:
             self.logger.info('Building queue is not empty')
+        return True
+
+    def update_planet_research(self, planet):
+        resp = self.br.open(self._get_url('research', planet))
+        soup = BeautifulSoup(resp)
+        try:
+            ButtonList = soup.find(id='buttonz')
+            AllResearchList = ButtonList.findAll('li')
+            for research in AllResearchList:
+                if research.get('class') == 'on':
+                    fb = research.find('a', 'fastBuild')
+                    if fb:
+                        build_url = fb.get('onclick') if fb else ''
+                        build_url = self._parse_research_url(build_url)
+                        self.logger.info('Research launched on %s:%s'% (planet, fb.get('title')))
+                        self.br.open(build_url)
+                        break
+        except:
+            self.logger.exception('Exception while retrieving researches')
+
+
         return True
 
     def transport_resources(self):
