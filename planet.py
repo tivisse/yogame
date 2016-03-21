@@ -124,6 +124,12 @@ class Planet(object):
             elif b['fusionPlant']['can_build'] and \
                     b['fusionPlant']['level'] < max_fusion_lvl:
                 return u'Fusion plant', b['fusionPlant']['build_url']
+            elif b['metalStorage']['can_build']:
+                return u'Metal Storage', b['metalStorage']['build_url']
+            elif b['crystalStorage']['can_build']:
+                return u'Crystal Storage', b['crystalStorage']['build_url']
+            elif b['deuteriumTank']['can_build']:
+                return u'Deuterium Tank', b['deuteriumTank']['build_url']
             else:
                 return None, None
         else:

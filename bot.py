@@ -316,10 +316,14 @@ class Bot(object):
             return
         try:
             buildingList = soup.find(id='building')
+            storageList = soup.find(id='storage')
             buildings = ('metalMine', 'crystalMine', 'deuteriumMine', 'solarPlant',
-                'fusionPlant', 'solarSatellite'
+                'fusionPlant', 'solarSatellite', 'metalStorage', 'crystalStorage', 
+                'deuteriumTank'
             )
-            for building, b in zip(buildings, buildingList.findAll('li')):
+            storages = ('metalStorage', 'crystalStorage', 'deuteriumTank')
+            allBuildingList = zip(buildings, buildingList.findAll('li')) + zip(storages, storageList.findAll('li'))
+            for building, b in allBuildingList:
                 can_build = 'on' in b.get('class')
                 fb = b.find('a', 'fastBuild')
                 build_url = fb.get('onclick') if fb else ''
