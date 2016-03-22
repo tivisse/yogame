@@ -404,11 +404,11 @@ class Bot(object):
                     if fb:
                         build_url = fb.get('onclick') if fb else ''
                         build_url = self._parse_research_url(build_url)
-                        self.logger.info('Research launched on %s:%s'% (planet, fb.get('title')))
+                        self.logger.info('Facility upgraded on %s:%s'% (planet, fb.get('title')))
                         self.br.open(build_url)
                         break
         except:
-            self.logger.exception('Exception while retrieving researches')
+            self.logger.exception('Exception while retrieving facilities statuses')
 
 
         return True
